@@ -1,0 +1,3 @@
+please consult the detailed verification steps located in the Project 4 files. Follow these guidelines meticulously when verifying your codes. The screenshots I provided below are references.
+
+I want all the files in one zipped folder including the Python codes and screenshots showing what you have tested for each question.
