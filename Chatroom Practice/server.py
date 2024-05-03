@@ -24,6 +24,7 @@ clients = []
 aliases = []
 # Format
 FORMAT = "utf-8"
+PASSWORD = "zed123"
 
 
 # broadcast
@@ -50,14 +51,19 @@ def handle_client(client) -> None:
     while True:
         try:
             message = client.recv(1024).decode(FORMAT)
+            index = clients.index(client)
+            alias = aliases[index]
+            if message == f"{alias}: quit":
+                client.send("[SERVER] Client disconnected.\n".encode(FORMAT))
+                raise Exception
             broadcast(message)
         except:
             index = clients.index(client)
             clients.remove(client)
             alias = aliases[index]
             aliases.remove(alias)
-            # closing connection to the client socket
             client.close()
+            print(f"[SERVER] {alias} is now disconnected.")
             broadcast(f"{alias} has disconnected from the chatroom.")
             break
 
@@ -79,6 +85,16 @@ def receive():
         client.send(f"alias?\n".encode(FORMAT))
 
         alias = client.recv(1024).decode(FORMAT)
+        # checking for password
+        if alias == "admin":
+            # we need to prompt client(admin) for password
+            client.send("[SERVER] Password: \n".encode(FORMAT))
+            password = client.recv(1024).decode(FORMAT)
+            if password != PASSWORD:
+                client.send("[SERVER] Connection Failed!\n".encode(FORMAT))
+                client.close()
+                continue
+
         aliases.append(alias)
         print(f"The alias of the client {address} is {alias}")
         broadcast(f"{alias} has connected to the chatroom.")
